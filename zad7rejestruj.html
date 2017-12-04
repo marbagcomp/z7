@@ -1,0 +1,57 @@
+﻿<style>
+body {
+font-size:15px;
+font-family:Verdana;
+line-height:1.8;
+word-spacing:3px;
+}
+</style>
+
+<form method="POST" action="register.php">
+<b>Login:</b> <input type="text" name="login" required><br>
+<b>Hasło:</b> <input type="password" name="haslo1" required><br>
+<b>Powtórz hasło:</b> <input type="password" name="haslo2" required><br>
+<b>Email:</b> <input type="text" name="email" required><br>
+<input type="submit" value="Zarejestruj się" name="loguj"><br>
+<a href="http://marbagcomp.gbzl.pl/zad7.php"><li>Wróć do strony głównej</li></a></br>
+
+</form> 
+
+<?php
+mysql_connect("localhost","vertim_pass11","vertim123");
+mysql_select_db("vertim_pass11");
+
+function filtruj($zmienna) 
+{
+    if(get_magic_quotes_gpc())
+        $zmienna = stripslashes($zmienna); // usuwamy slashe
+
+	// usuwamy spacje, tagi html oraz niebezpieczne znaki
+    return mysql_real_escape_string(htmlspecialchars(trim($zmienna))); 
+}
+
+if (isset($_POST['loguj'])) 
+{
+	$login = filtruj($_POST['login']);
+	$haslo1 = filtruj($_POST['haslo1']);
+	$haslo2 = filtruj($_POST['haslo2']);
+	$email = filtruj($_POST['email']);
+	$ip = filtruj($_SERVER['REMOTE_ADDR']);
+	
+	// sprawdzamy czy login nie jest już w bazie
+	if (mysql_num_rows(mysql_query("SELECT users FROM uzytkownicy WHERE login = '".$login."';")) == 0) 
+	{
+		if ($haslo1 == $haslo2) // sprawdzamy czy hasła takie same
+		{
+			mysql_query("INSERT INTO `users` (`login`, `haslo`, `email`, `rejestracja`, `logowanie`, `ip`)
+				VALUES ('".$login."', '".md5($haslo1)."', '".$email."', '".time()."', '".time()."', '".$ip."');");
+
+			echo "Konto zostało utworzone!";
+		}
+		else echo "Hasła nie są takie same";
+	}
+	else echo "Podany login jest już zajęty.";
+}
+?>
+
+<?php mysql_close(); ?>
