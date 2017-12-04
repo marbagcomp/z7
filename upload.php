@@ -3,7 +3,7 @@ if($_FILES["upload_file"]["name"] != '')
 {
  $data = explode(".", $_FILES["upload_file"]["name"]);
  $extension = $data[1];
- $allowed_extension = array("jpg", "png", "gif");
+ $allowed_extension = array("jpg", "png", "gif", "doc", "docx", "pdf", "txt", "php", "html", "css");
  if(in_array($extension, $allowed_extension))
  {
   $new_file_name = rand() . '.' . $extension;
